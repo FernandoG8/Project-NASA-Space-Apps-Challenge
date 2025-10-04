@@ -1,0 +1,16 @@
+#API
+fastapi
+uvicorn[standard]
+python-dotenv
+pydantic-settings
+httpx
+starlette
+
+# Core model
+numpy
+pandas
+requests
+
+# extra
+
+pillow
