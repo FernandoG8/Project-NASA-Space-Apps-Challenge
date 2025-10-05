@@ -1,22 +1,79 @@
-# 🌦️ Campeche Weather API
+# 🌦️ Climate Analysis API (NASA POWER / MERRA-2)
 
-**Campeche Weather API** es un proyecto en **FastAPI** que permite consultar, comparar y clasificar condiciones climáticas basadas en **probabilidades históricas**.  
-No realiza pronósticos deterministas, sino análisis de probabilidad histórica para categorías como *very hot/cold*, *very windy*, *very wet*, y *very uncomfortable*.
+## 📘 Overview
+
+This project provides a **FastAPI-based climate analysis API** that retrieves and analyzes historical environmental data (temperature, precipitation, humidity, and windspeed) from NASA POWER.  
+It estimates **empirical probabilities** for specific climate conditions (e.g., *very wet*, *very hot*) based on long-term historical distributions — not deterministic weather forecasts.
 
 ---
 
-## Instalación 
-Se debera instalar los requerimientos del mismo proyecto en un entorno vitual de python (requirements.txt) En caso de Windows debera instarlos manualmente, en caso de usar linux, podra ejecutarlos en sricpts, recuerda darle permiso a los dos para ejecutar cambios
+## ⚙️ Features
 
-## Estructura
-La estructura se base en donde los routers tenemos los EndPoinst de la Api 
-# Services 
-seria donde tendriamos la manera de extraer los datos o el modelo de estadistica para calcular la estimación en base de estadistica 
+- Query any geographic coordinate (lat/lon)
+- Analyze a specific day or a short time window across multiple years
+- Retrieve CSV datasets or PNG trend plots
+- Compute percentile-based probability classifications
+- Validate user inputs (lat/lon, dates, leap years, etc.)
+- Designed with modular architecture: routers, schemas, services, datasources, utils
+
+---
+
+## 🧩 Requirements
+
+- **Python 3.12+**
+- **pip** (latest version)
+- (optional) **virtualenv** or **venv**
+- **Git** (to clone the repository)
+
+---
+
+## 🛠️ Installation
+
+### 1. Clone the repository
+
+```bash
+cd campeche_weather
+https://github.com/FernandoG8/Project-NASA-Space-Apps-Challenge.git
+```
+
+## 2. Create environment 
+---
+
+###  On Linux / macOS / WSL
+
+```bash
+# Create a virtual environment inside the project folder
+python3 -m venv .venv
+
+# Activate the virtual environment
+source .venv/bin/activate
+
+## 3. Install Project Dependencies
+
+Once your virtual environment is active (`(.venv)` appears in your terminal), install all project dependencies from the `requirements.txt` file.
+
+---
+
+### Upgrade `pip` and install requirements.txt
+
+It’s good practice to upgrade `pip` first to avoid compatibility issues.
+
+```bash
+pip install --upgrade pip
+after:
+pip install -r requirements.txt
+```
 
 
-## Deploy
-Para el deply de la api deben realizar la instalacion de las dependencias de la API y realizar el comando para prederlo
-# Opción manual
- - source .venv/bin/activate
-- uvicorn app.main:app --reload --port 8000 <--- comando para ejecutar la api
+## Run the API Server
 
+Once dependencies are installed and your virtual environment is active, you can start the API using **Uvicorn**, the ASGI server used by FastAPI.
+
+---
+
+### Run in Development Mode
+
+Use the `--reload` flag to automatically restart the server whenever you modify code.
+
+```bash
+uvicorn app.main:app --reload --port 8000
