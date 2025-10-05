@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.routers import health, analyze, metadata
+from app.routers import analyze, metadata, series
 
 app = FastAPI(
     title="Weather API",
@@ -25,3 +26,4 @@ if settings.cors_enabled:
 app.include_router(health.router)                 # GET /health
 app.include_router(metadata.router, prefix="/v1") # GET /v1/metadata, /v1/factors
 app.include_router(analyze.router,  prefix="/v1") # POST /v1/analyze
+app.include_router(series.router, prefix="/v1")   # POST /v1/series 
