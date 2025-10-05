@@ -1,21 +1,40 @@
 # app/config.py
+from __future__ import annotations
+from typing import List, Union
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
+import json
 
 class Settings(BaseSettings):
-    app_env: str = Field(default="dev")
-    app_port: int = Field(default=8000)
-    allow_origins_csv: str = Field(default="http://localhost:3000")  # <- string
-    http_timeout: int = Field(default=15)
-
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=False,
-        extra="ignore",
+        extra="ignore",  # ignora variables que no declares aquí
     )
 
-    @property
-    def allow_origins(self) -> list[str]:
-        return [s.strip() for s in self.allow_origins_csv.split(",") if s.strip()]
+    app_env: str = "dev"
+    app_port: int = 8000
+    allow_origins: Union[str, List[str]] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
+    http_timeout: int = 15
+    cors_enabled: bool = True
+
+    @field_validator("allow_origins")
+    @classmethod
+    def _normalize_allow_origins(cls, v):
+        if isinstance(v, list):
+            return v
+        s = str(v).strip()
+        if not s:
+            return []
+        # intenta parsear JSON primero
+        try:
+            parsed = json.loads(s)
+            if isinstance(parsed, list):
+                return [str(x) for x in parsed]
+        except Exception:
+            pass
+        # fallback: CSV
+        return [p.strip() for p in s.split(",") if p.strip()]
 
 settings = Settings()
