@@ -3,6 +3,8 @@ from pydantic import BaseModel, Field
 from datetime import date
 import uuid
 from app.services.climate import compute_empirical_probabilities
+from app.services.powerClient import fetch_and_label_temperature_window
+
 
 router = APIRouter(tags=["probability"])
 
@@ -13,6 +15,16 @@ class ProbabilityReq(BaseModel):
     date: date
     radius_km: float = Field(0, ge=0, le=50)
     window_days: int = Field(30, ge=7, le=60)
+
+class TempReq(BaseModel):
+    latitude: float = Field(..., ge=-90, le=90)
+    longitude: float = Field(..., ge=-180, le=180)
+    month: int = Field(..., ge=1, le=12)
+    day: int = Field(..., ge=1, le=31)
+    start_year: int
+    end_year: int
+    half_window_days: int = Field(10, ge=0, le=30)
+ 
 
 # almacenamiento en memoria para demo (luego DB)
 _QUERIES: dict[str, dict] = {}
@@ -36,6 +48,17 @@ def probability(req: ProbabilityReq):
     }
     _QUERIES[qid] = payload
     return payload
+@router.post("/probability/temperature")
+def probability_temperature(req: TempReq):
+    out = fetch_and_label_temperature_window(
+        lat=req.latitude, lon=req.longitude,
+        month=req.month, day=req.day,
+        start_year=req.start_year, end_year=req.end_year,
+        half_window_days=req.half_window_days
+    )
+    if not out["ok"]:
+        raise HTTPException(424, detail=out["message"])
+    return out
 
 @router.get("/queries/{query_id}")
 def get_query(query_id: str):

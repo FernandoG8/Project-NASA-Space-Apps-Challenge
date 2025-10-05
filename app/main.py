@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 
 # Routers
-from app.routers import health, metadata, probability, compare
+from app.routers import health, metadata, probability, compare,  daily,export
 
 app = FastAPI(title="S2S Historical Probability API", version="0.1.0")
 
@@ -19,6 +19,9 @@ app.add_middleware(
 )
 
 # Rutas
+
+app.include_router(daily.router, prefix="/v1")
+app.include_router(export.router, prefix="/v1")
 app.include_router(health.router)             # /health
 app.include_router(metadata.router, prefix="/v1")
 app.include_router(probability.router, prefix="/v1")
