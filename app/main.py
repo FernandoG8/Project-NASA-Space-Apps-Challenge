@@ -1,32 +1,29 @@
+# app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# Config (por tu estructura actual está en services/)
 from app.config import settings
+from app.routers import health, analyze, metadata
+from app.routers import analyze, metadata, series
 
-# Routers
-from app.routers import health, metadata, probability, compare,  daily,export
-
-app = FastAPI(title="S2S Historical Probability API", version="0.1.0")
-
-# CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.allow_origins,  # propiedad o lista según tu config
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+app = FastAPI(
+    title="Weather API",
+    version="1.0.0",
+    description="Probabilidades históricas y clasificación por factores climáticos (POWER / MERRA-ready).",
 )
 
-# Rutas
+# CORS
+if settings.cors_enabled:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.allow_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-app.include_router(daily.router, prefix="/v1")
-app.include_router(export.router, prefix="/v1")
-app.include_router(health.router)             # /health
-app.include_router(metadata.router, prefix="/v1")
-app.include_router(probability.router, prefix="/v1")
-app.include_router(compare.router, prefix="/v1")
-
-@app.get("/")
-def root():
-    return {"status": "ok", "docs": "/docs"}
+# Routers
+app.include_router(health.router)                 # GET /health
+app.include_router(metadata.router, prefix="/v1") # GET /v1/metadata, /v1/factors
+app.include_router(analyze.router,  prefix="/v1") # POST /v1/analyze
+app.include_router(series.router, prefix="/v1")   # POST /v1/series 
