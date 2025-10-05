@@ -5,9 +5,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 
 # Routers
-from app.routers import health, metadata, probability, compare,  daily,export
+from app.routers import health, metadata, probability, compare, daily,export, precip
 
 app = FastAPI(title="S2S Historical Probability API", version="0.1.0")
+app = FastAPI(title="Campeche Weather API")
+
 
 # CORS
 app.add_middleware(
@@ -27,6 +29,9 @@ app.include_router(metadata.router, prefix="/v1")
 app.include_router(probability.router, prefix="/v1")
 app.include_router(compare.router, prefix="/v1")
 
+app.include_router(precip.router)
+
 @app.get("/")
 def root():
     return {"status": "ok", "docs": "/docs"}
+
