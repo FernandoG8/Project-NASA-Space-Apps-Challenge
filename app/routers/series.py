@@ -11,6 +11,10 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+from pydantic import BaseModel
+from typing import List, Optional
+
+
 from app.datasources.power_client import fetch_window_all_years
 
 router = APIRouter(tags=["series"])
@@ -137,3 +141,55 @@ def series_plot(req: SeriesReq):
                 f"{'_trend' if req.trend else ''}.png")
     headers = {"Content-Disposition": f'inline; filename="{filename}"'}
     return StreamingResponse(buf, media_type="image/png", headers=headers)
+
+
+
+class SeriesPoint(BaseModel):
+    year: int
+    value: float
+
+class SeriesJSON(BaseModel):
+    points: List[SeriesPoint]
+    meta: dict
+
+@router.post(
+    "/series/json",
+    response_model=SeriesJSON,
+    tags=["series"],
+    summary="Serie anual en JSON",
+    description=(
+        "Devuelve una serie anual agregada por año para el factor seleccionado. "
+        "Útil para graficar en clientes (iOS/SwiftUI, web, etc.)."
+    ),
+    responses={424: {"description": "No data returned from POWER"}}
+)
+def series_json(req: SeriesReq):
+    var, units = FACTOR_TO_VAR[req.factor]
+
+    df = fetch_window_all_years(
+        lat=req.latitude, lon=req.longitude,
+        month=req.month, day=req.day,
+        start_year=req.start_year, end_year=req.end_year,
+        half_window_days=req.half_window_days,
+        params=[var],
+    )
+    if df.empty or var not in df.columns:
+        raise HTTPException(424, detail="No data returned from POWER")
+
+    series = _aggregate_series(df, var, req.agg)
+
+    points = [SeriesPoint(year=int(y), value=float(v)) for y, v in series.items()]
+    meta = {
+        "factor": req.factor,
+        "units": units,
+        "lat": req.latitude,
+        "lon": req.longitude,
+        "month": req.month,
+        "day": req.day,
+        "half_window_days": req.half_window_days,
+        "agg": req.agg,
+        "count": len(points),
+        "range_years": [int(series.index.min()), int(series.index.max())] if len(series) else None,
+    }
+    return {"points": points, "meta": meta}
+

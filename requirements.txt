@@ -22,6 +22,20 @@ pandas>=2.2.0
 # --- Visualization & Image Utils ---
 pillow>=10.0.0
 
+# --- Database (MariaDB / MySQL) ---
+sqlalchemy>=2.0.31
+pymysql>=1.1.0
+alembic>=1.13.1
+
+# --- Authentication & Security ---
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+
+# --- Optional Utils ---
+# rich>=13.7.0          # (logging elegante)
+# fastapi-pagination>=0.12.15
+# email-validator>=2.2.0
+
 # ==========================
 #  End of Requirements
 # ==========================
