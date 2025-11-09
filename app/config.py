@@ -49,7 +49,7 @@ class Settings(BaseSettings):
 
     # --- Base de datos ---
     database_url: str = Field(
-        "mysql+pymysql://fernando:password@localhost/tallerFirestone",
+        "mysql+pymysql://fernando:password@localhost/weatherAPI",
         alias="DATABASE_URL"
     )
 

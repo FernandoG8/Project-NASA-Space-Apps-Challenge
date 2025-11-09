@@ -25,7 +25,7 @@ def main(email: str, password: str):
             user = User(
                 email=email,
                 hashed_password=hash_password(password),
-                active=True  # 👈 cambio aquí (antes decía is_active)
+                active=True  # Asume que el admin está activo por defecto
             )
             db.add(user)
             db.commit()
