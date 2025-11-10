@@ -1,14 +1,17 @@
 from __future__ import annotations
 import time
 from typing import Any, Dict, Optional
+
 import requests
+
+from app.core.config import settings
 
 class HttpError(Exception):
     pass
 
 def get_json(
     url: str,
-    timeout: int = 30,
+    timeout: int = settings.http_timeout,
     retries: int = 3,
     backoff: float = 1.6,
     headers: Optional[Dict[str, str]] = None,

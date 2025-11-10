@@ -1,7 +1,8 @@
-from datetime import date, timedelta
+from datetime import date
+
 import pandas as pd
+
 from app.utils.http import get_json
-from app.utils.timewin import to_yyyymmdd
 
 BASE = "https://power.larc.nasa.gov/api/temporal/daily/point"
 
