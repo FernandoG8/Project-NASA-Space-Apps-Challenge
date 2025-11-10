@@ -1,8 +1,9 @@
 # scripts/create_admin.py
 import sys
+
 from app.db import Base, SessionLocal, engine
-from app.models import User, Role, UserRole
-from app.security import hash_password
+from app.db.models import Role, User, UserRole
+from app.core.security import hash_password
 
 def main(email: str, password: str):
     # Crea las tablas si no existen
@@ -25,7 +26,7 @@ def main(email: str, password: str):
             user = User(
                 email=email,
                 hashed_password=hash_password(password),
-                active=True  # Asume que el admin está activo por defecto
+                is_active=True,  # Asume que el admin está activo por defecto
             )
             db.add(user)
             db.commit()
